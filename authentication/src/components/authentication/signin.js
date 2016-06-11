@@ -1,0 +1,77 @@
+var ReactNative = require('react-native');
+var React = require('react');
+var {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+} = ReactNative;
+
+var Parse = require('parse/react-native');
+var _ = require('lodash');
+var Button = require('../common/button');
+
+module.exports = React.createClass({
+  getInitialState: function() {
+    return {
+      username: '',
+      password: '',
+      errorMessage: null,
+    };
+  },
+  render: function() {
+    return (
+      <View style={styles.container}>
+        <Text>Sign In</Text>
+        <Text style={styles.label}>Username:</Text>
+        <TextInput 
+          style={styles.input}
+          value={this.state.username}
+          onChangeText={(text) => this.setState({username: text})}
+        />
+
+        <Text style={styles.label}>Password:</Text>
+        <TextInput secureTextEntry={true} style={styles.input}
+          value={this.state.password}
+          onChangeText={(text) => this.setState({password: text})}
+        />
+        <Text style={styles.label}>{this.state.errorMessage}</Text>
+        <Button text={'Sign In'} onPress={this.onPress} />
+      </View>
+    );
+  },
+  onPress: function() {
+    this.setState({password: ''});
+    console.log('log in');
+    Parse.User.logIn(this.state.username, this.state.password, {
+      success: (user) => { 
+        console.log(user); 
+      },
+        error: (data, error) => { 
+          this.setState({errorMessage: _.capitalize(error.message)});
+        },
+    });
+
+  },
+});
+
+var styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  input: {
+    padding: 4,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    margin: 5,
+    width: 200,
+    alignSelf: 'center',
+  },
+  label: {
+    fontSize: 18,
+  },
+});
